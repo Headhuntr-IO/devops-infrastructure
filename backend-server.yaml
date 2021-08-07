@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: A sample template
+
+Parameters:
+  defaultAction:
+    Type: String
+    Default: deny
+
+Resources:
+  Artifacts:
+    Type: AWS::S3::Bucket
+  UserPool:
+    Type: AWS::Cognito::UserPool
+  GraphQLApi:
+    Type: AWS::AppSync::GraphQLApi
+    Properties:
+      Name: "AWS::StackName"
+      AuthenticationType: "AMAZON_COGNITO_USER_POOLS"
+      UserPoolConfig:
+        UserPoolId:
+          Ref: UserPool
+        AwsRegion:
+          Ref: "AWS::Region"
+        DefaultAction:
+          Ref: defaultAction
+
