@@ -1,0 +1,18 @@
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type SearchRequest {
+    id: ID!
+    name: String!
+}
+
+type Mutation {
+    createSearchRequest(id: ID!, name: String!): SearchRequest
+}
+
+type Query {
+    getOneSearchRequest(id: ID!): SearchRequest
+}
+
