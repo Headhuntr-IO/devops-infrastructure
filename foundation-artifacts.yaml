@@ -1,0 +1,13 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Containers of artifacts generated from code or other templates
+
+Parameters:
+  ArtifactBucketName:
+    Type: String
+    Default: "hhv2.headhuntr.io.artifacts"
+
+Resources:
+  ArtifactsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Ref ArtifactBucketName
