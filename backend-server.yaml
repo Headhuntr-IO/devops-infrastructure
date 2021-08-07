@@ -4,7 +4,7 @@ Description: A sample template
 Parameters:
   defaultAction:
     Type: String
-    Default: deny
+    Default: DENY
 
 Resources:
   Artifacts:
@@ -14,13 +14,13 @@ Resources:
   GraphQLApi:
     Type: AWS::AppSync::GraphQLApi
     Properties:
-      Name: "AWS::StackName"
+      Name:
+        Ref: AWS::StackName
       AuthenticationType: "AMAZON_COGNITO_USER_POOLS"
       UserPoolConfig:
         UserPoolId:
           Ref: UserPool
         AwsRegion:
-          Ref: "AWS::Region"
-        DefaultAction:
-          Ref: defaultAction
+          Ref: AWS::Region
+        DefaultAction: DENY
 
