@@ -11,3 +11,10 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: !Ref artifactBucketName
+
+Outputs:
+  ArtifactBucketName:
+    Description: The S3 bucket name for the location of various artifacts
+    Value: !Sub "s3://${artifactBucketName}/"
+    Export:
+      Name: !Sub "${AWS::StackName}-ArtifactBucketName"

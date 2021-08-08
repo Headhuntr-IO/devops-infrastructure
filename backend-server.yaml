@@ -1,26 +1,29 @@
 AWSTemplateFormatVersion: "2010-09-09"
-Description: A sample template
+Description: HHV2 App
 
 Parameters:
-  defaultAction:
+  artifactStack:
     Type: String
-    Default: DENY
+    Default: "hhv2-artifacts"
 
 Resources:
-  Artifacts:
-    Type: AWS::S3::Bucket
   UserPool:
     Type: AWS::Cognito::UserPool
   GraphQLApi:
     Type: AWS::AppSync::GraphQLApi
     Properties:
-      Name:
-        Ref: AWS::StackName
+      Name: !Ref AWS::StackName
       AuthenticationType: "AMAZON_COGNITO_USER_POOLS"
       UserPoolConfig:
-        UserPoolId:
-          Ref: UserPool
-        AwsRegion:
-          Ref: AWS::Region
+        UserPoolId: !Ref UserPool
+        AwsRegion: !Ref AWS::Region
         DefaultAction: DENY
-
+  GraphQLApiSchema:
+    Type: AWS::AppSync::GraphQLSchema
+    Properties:
+      ApiId: !Ref GraphQLApi
+      DefinitionS3Location: !Sub
+        - "${artifactLocation}${file}"
+        - "artifactLocation": !ImportValue
+            "Fn::Sub": "${artifactStack}-ArtifactBucketName"
+          "file": "schema.graphql"
