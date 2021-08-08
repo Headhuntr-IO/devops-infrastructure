@@ -1,0 +1,66 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: HHV2 App
+
+Parameters:
+  artifactStack:
+    Type: String
+    Default: "hhv2-artifacts"
+  searchServiceStack:
+    Type: String
+    Default: "hhv2-search-service"
+
+Resources:
+  UserPool:
+    Type: AWS::Cognito::UserPool
+  GraphQLApi:
+    Type: AWS::AppSync::GraphQLApi
+    Properties:
+      Name: !Ref AWS::StackName
+      AuthenticationType: "AMAZON_COGNITO_USER_POOLS"
+      UserPoolConfig:
+        UserPoolId: !Ref UserPool
+        AwsRegion: !Ref AWS::Region
+        DefaultAction: DENY
+  GraphQLApiSchema:
+    Type: AWS::AppSync::GraphQLSchema
+    Properties:
+      ApiId: !GetAtt GraphQLApi.ApiId
+      DefinitionS3Location: !Sub
+        - "${artifactLocation}${file}"
+        - "artifactLocation": !ImportValue
+            "Fn::Sub": "${artifactStack}-ArtifactBucketName"
+          "file": "schema.graphql"
+  AppSyncRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - lambda.amazonaws.com
+            Action:
+              - 'sts:AssumeRole'
+      Path: /
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action: '*'
+                Resource: '*'
+
+  SearchServiceDataSource:
+    Type: AWS::AppSync::DataSource
+    Properties:
+      ApiId: !GetAtt GraphQLApi.ApiId
+      Type: "AWS_LAMBDA"
+      Name: SearchService
+      Description: Integration with the Search Service Application
+      ServiceRoleArn: !GetAtt AppSyncRole.Arn
+      LambdaConfig:
+        LambdaFunctionArn: !ImportValue
+          "Fn::Sub": "${searchServiceStack}-FunctionArn"
+

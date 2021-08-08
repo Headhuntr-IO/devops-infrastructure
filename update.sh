@@ -1,4 +1,5 @@
 aws cloudformation update-stack \
---stack-name test-backend \
+--stack-name hhv2-backend-api \
 --region us-east-1 \
---template-body file://backend-server.yaml
+--template-body file://backend-api.yaml \
+--capabilities CAPABILITY_IAM
