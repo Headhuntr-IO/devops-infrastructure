@@ -1,0 +1,26 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: HHV2 Seed User
+
+Parameters:
+  userPoolStack:
+    Type: String
+    Default: "hhv2-backend-api"
+  username:
+    Type: String
+    Default: "test@test.com"
+
+Resources:
+  TheUser:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      Username: !Sub "${username}"
+      UserPoolId: !ImportValue
+        "Fn::Sub": "${userPoolStack}-UserPoolId"
+      DesiredDeliveryMediums:
+        - EMAIL
+      UserAttributes:
+        - Name: name
+          Value: Test User
+        - Name: email
+          Value: !Sub "${username}"
+
