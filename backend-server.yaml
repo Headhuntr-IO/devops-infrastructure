@@ -21,7 +21,7 @@ Resources:
   GraphQLApiSchema:
     Type: AWS::AppSync::GraphQLSchema
     Properties:
-      ApiId: !Ref GraphQLApi
+      ApiId: !GetAtt GraphQLApi.ApiId
       DefinitionS3Location: !Sub
         - "${artifactLocation}${file}"
         - "artifactLocation": !ImportValue
