@@ -9,9 +9,44 @@ Parameters:
     Type: String
     Default: "hhv2-search-service"
 
+Outputs:
+  UserPoolId:
+    Description: The user pool id
+    Value: !Ref UserPool
+    Export:
+      Name: !Sub "${AWS::StackName}-UserPoolId"
+
 Resources:
   UserPool:
     Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: !Ref AWS::StackName
+      UsernameAttributes:
+        - email
+      UsernameConfiguration:
+        CaseSensitive: False
+      Schema:
+        - Name: name
+          Required: "true"
+          AttributeDataType: String
+        - Name: email
+          Required: "true"
+          AttributeDataType: String
+      AccountRecoverySetting:
+        RecoveryMechanisms:
+          - Name: verified_email
+            Priority: 1
+  UserPoolWebClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref UserPool
+  UserPoolGroupAdmin:
+    Type: AWS::Cognito::UserPoolGroup
+    Properties:
+      UserPoolId: !Ref UserPool
+      GroupName: Administrators
+      Description: Admin Users capable of doing anything
+
   GraphQLApi:
     Type: AWS::AppSync::GraphQLApi
     Properties:
@@ -63,4 +98,3 @@ Resources:
       LambdaConfig:
         LambdaFunctionArn: !ImportValue
           "Fn::Sub": "${searchServiceStack}-FunctionArn"
-
